@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{%block title%}Tasker{%endblock%}
+{%block content%}
+{{ valid }}
+{% for task in tasks %}
+<table border=1>
+    <tr>
+        <td>Task</td>
+        <td>Date of completion</td>
+        <td>Actions</td>
+    </tr>
+    <tr>
+        <td>{{ tasks.task }}</td>
+        <td>{{ tasks.end_date }}</td>
+        <td>
+            <form action='{% url "register" %}'>
+                <input type="submit" value="Edit" name="edit" task_id="{{ task.id }}">
+            </form>
+            <form action='{% url "register" %}'>
+                <input type="submit" value="Complete" name="complete" task_id="{{ task.id }}">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<p></p>
+<form action='{% url "register" %}'>
+                <input type="submit" value="Create new task" name="new_task">
+            </form>
+{%endblock%}

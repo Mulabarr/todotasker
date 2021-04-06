@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{%block title%}Tasker{%endblock%}
+{%block content%}
+<form action = '{% url "start_page" %}' method="post">
+    <p>Enter your username:<input type = "text" name = 'username'/></p>
+    <p>Enter your password:<input type = "password" name = 'password'/></p>
+    {{ valid }}
+    <p><input type = "submit" value = "Sign In" name = "login"/></p>
+    <p>First time? Please, sign up! <input type = "submit" value = "Sign Up" name = "reg"/></p>
+</form>
+{%endblock%}
