@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from tasker.views import start_page, register, tasker, create_task
+from tasker.views import start_page, register, tasker, create_task, edited
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('signup/', register, name='register'),
     path('tasker/<str:username>', tasker, name='tasker'),
     path('create/', create_task, name='create'),
+    path('edit/<int:task>', edited, name='edit_page')
 ]

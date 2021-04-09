@@ -65,6 +65,9 @@ def tasker(request, username):
                 return render(request, 'task_page.html', {'tasks': tasks})
             elif request.method == 'POST' and 'complete' in request.POST:
                 return complete(request, user)
+            elif request.method == 'POST' and 'edit' in request.POST:
+                task = int(request.POST['task_id'])
+                return redirect('edit_page', task=task)
             else:
                 return redirect('start_page')
         else:
@@ -96,8 +99,36 @@ def complete(request, user):
     all_task = Task.objects.get(id=task_id)
     all_task.delete()
     tasks = Task.objects.filter(user=user)
-    if not tasks:
-        return render(request, 'task_page.html', {'valid': 'You have no tasks. Create new?'})
     tasks = list(tasks)
     return render(request, 'task_page.html', {'tasks': tasks})
 
+
+def edited(request, task):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            new_task = []
+            new_task.append(task)
+            return render(request, 'edit_page.html', {'tasks': new_task})
+        if request.method == 'POST' and 'edit' in request.POST:
+            all_task = Task.objects.get(id=task)
+            new_task = request.POST.get('new_task')
+            end_date = request.POST.get('new_date')
+            if not new_task:
+                all_task.end_date = end_date
+                all_task.save()
+                return redirect('tasker', username=request.user.username)
+            elif not end_date:
+                all_task.main_task = new_task
+                all_task.save()
+                return redirect('tasker', username=request.user.username)
+            elif not new_task and end_date:
+                return redirect('tasker', username=request.user.username)
+            else:
+                all_task.main_task = new_task
+                all_task.end_date = end_date
+                all_task.save()
+                return redirect('tasker', username=request.user.username)
+        if request.method == 'POST' and 'back' in request.POST:
+            return redirect('tasker', username=request.user.username)
+    else:
+        return redirect('start_page')

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{%block title%}Edit Page{%endblock%}
+{%block content%}
+{% for task in tasks%}
+<form action = "{% url 'edit_page' task %}" method="post">
+    <p>Edit Task:<input type = "text" name = 'new_task'/></p>
+    <p>Edit Date:<input type = "date" name = 'new_date'/></p>
+    {{ valid }}
+    <p><input type = "submit" value = "Edit" name = "edit"/></p>
+    <p><input type = "submit" value = "Back" name = "back"/></p>
+</form>
+{% endfor %}
+{%endblock%}
