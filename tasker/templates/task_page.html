@@ -10,21 +10,23 @@
         <td>Actions</td>
     </tr>
     <tr>
-        <td>{{ tasks.task }}</td>
-        <td>{{ tasks.end_date }}</td>
+        <td>{{ task.main_task }}</td>
+        <td>{{ task.end_date }}</td>
         <td>
-            <form action='{% url "register" %}'>
-                <input type="submit" value="Edit" name="edit" task_id="{{ task.id }}">
+            <form action='{% url "tasker" request.user.username %}' method="post">
+                <input type="text" value="{{ task.id }}" name = 'task_id' hidden="true">
+                <input type="submit" value="Edit" name="edit">
             </form>
-            <form action='{% url "register" %}'>
-                <input type="submit" value="Complete" name="complete" task_id="{{ task.id }}">
+            <form action='{% url "tasker" request.user.username %}' method="post">
+                <input type="text" value="{{ task.id }}" name = 'task_id' hidden="true">
+                <input type="submit" value="Complete" name="complete">
             </form>
         </td>
     </tr>
     {% endfor %}
 </table>
 <p></p>
-<form action='{% url "register" %}'>
+<form action='{% url "create" %}'>
                 <input type="submit" value="Create new task" name="new_task">
             </form>
 {%endblock%}

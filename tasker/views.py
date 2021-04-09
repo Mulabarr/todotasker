@@ -7,13 +7,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 
-def delete(task_id):
-    Task.objects.delete(id=task_id)
-
-
-def checker(*args):
+def checker(word):
     alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-    for i in args:
+    for i in word:
         if i not in alphabet:
             return False
         else:
@@ -25,7 +21,11 @@ def register(request):
         return redirect('start_page')
     if request.method == 'POST' and 'login' in request.POST:
         username = request.POST.get('username')
+        if checker(username) is not True:
+            return render(request, 'register.html', {'valid': 'Incorrect username'})
         password = request.POST.get('password')
+        if len(password) < 6 or checker(password) is not True:
+            return render(request, 'register.html', {'valid': 'Incorrect password'})
         if not User.objects.filter(username=username):
             User.objects.create_user(username=username, password=password)
             return redirect('start_page')
@@ -46,10 +46,9 @@ def start_page(request):
         else:
             return render(request, 'start_page.html',
                           {'valid': 'Your username or password is incorrect'})
-    if request.method == 'POST' and 'reg' in request.POST:
+    elif request.method == 'POST' and 'reg' in request.POST:
         return redirect('register')
-
-    if request.method == 'GET':
+    else:
         logout(request)
         return render(request, 'start_page.html')
 
@@ -57,18 +56,15 @@ def start_page(request):
 def tasker(request, username):
     if request.user.is_authenticated:
         if request.user.username == username:
+            user = request.user
+            tasks = Task.objects.filter(user=user)
+            tasks = list(tasks)
             if request.method == 'GET':
-                user = User.objects.get(username=username)
-                user_id = user.id
-                tasks = Task.objects.filter(user=user_id)
                 if not tasks:
                     return render(request, 'task_page.html', {'valid': 'You have no tasks. Create new?'})
                 return render(request, 'task_page.html', {'tasks': tasks})
-            if request.method == 'POST' and 'complete' in request.POST:
-                task = request.POST.get()
-                task_id = task.id
-                delete(task_id)
-                return render(request, 'task_page.html', {})
+            elif request.method == 'POST' and 'complete' in request.POST:
+                return complete(request, user)
             else:
                 return redirect('start_page')
         else:
@@ -76,4 +72,32 @@ def tasker(request, username):
             return redirect('start_page')
     else:
         return redirect('start_page')
+
+
+def create_task(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST' and 'back' in request.POST:
+            return redirect('tasker')
+        elif request.method == 'POST':
+            new_task = request.POST.get('new_task')
+            end_date = request.POST.get('new_date')
+            user = request.user
+            Task.objects.create(main_task=new_task, end_date=end_date, user=user)
+            return redirect('tasker', username=request.user.username)
+        else:
+            return render(request, 'create_page.html')
+    else:
+        return redirect('start_page')
+
+
+def complete(request, user):
+    task = request.POST['task_id']
+    task_id = int(task)
+    all_task = Task.objects.get(id=task_id)
+    all_task.delete()
+    tasks = Task.objects.filter(user=user)
+    if not tasks:
+        return render(request, 'task_page.html', {'valid': 'You have no tasks. Create new?'})
+    tasks = list(tasks)
+    return render(request, 'task_page.html', {'tasks': tasks})
 

@@ -1,9 +1,6 @@
 from django.db import models
 
-
-class User(models.Model):
-    username = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
+from django.contrib.auth.models import User
 
 
 class Task(models.Model):
@@ -13,5 +10,5 @@ class Task(models.Model):
         User,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='tasks'
+        related_name='users'
     )

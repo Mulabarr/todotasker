@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from tasker.views import start_page, register, tasker
+from tasker.views import start_page, register, tasker, create_task
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', start_page, name='start_page'),
     path('signup/', register, name='register'),
-    path('tasker/<username>', tasker, name='tasker'),
+    path('tasker/<str:username>', tasker, name='tasker'),
+    path('create/', create_task, name='create'),
 ]

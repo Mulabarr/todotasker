@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{%block title%}Create Page{%endblock%}
+{%block content%}
+<form action = '{% url "create" %}' method="post">
+    <p>New Task:<input type = "text" name = 'new_task'/></p>
+    <p>Date of completion:<input type = "date" name = 'new_date'/></p>
+    {{ valid }}
+    <p><input type = "submit" value = "Create" name = "create"/></p>
+    <p><input type = "submit" value = "Back" name = "back"/></p>
+</form>
+{%endblock%}
